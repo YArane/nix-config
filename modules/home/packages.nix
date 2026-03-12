@@ -6,7 +6,5 @@
     defaultEditor = true;
   };
 
-  home.packages = with pkgs; [
-    claude-code
-  ];
+  home.packages = [ ];
 }
