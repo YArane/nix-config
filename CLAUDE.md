@@ -85,6 +85,12 @@ If my request is ambiguous, tell me which layer it belongs to and why before pro
 
 These are non-negotiable. If you see me drift from them, correct me.
 
+### Secrets
+
+**Never commit secrets to this repo** — no API keys, passwords, tokens, or private
+keys in any `.nix` file or other tracked file. This repo is public. When we need
+secrets in the config, we'll use sops-nix. Until then, keep secrets out entirely.
+
 ### Package Management
 
 **Never use `nix-env -i`** — it installs imperatively outside any declaration. Use
