@@ -99,8 +99,5 @@
   # sesh dependencies: fzf for the picker, fd for the find binding, zoxide for directory sessions
   home.packages = with pkgs; [
     sesh
-    fzf
-    fd
-    zoxide
   ];
 }

@@ -6,5 +6,7 @@
     defaultEditor = true;
   };
 
-  home.packages = [ ];
+  home.packages = with pkgs; [
+    fd
+  ];
 }
