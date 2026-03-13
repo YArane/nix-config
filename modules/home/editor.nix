@@ -21,6 +21,11 @@
     gcc
     gnumake
 
+    # LSP servers installed via Nix (Mason can't run these on NixOS)
+    marksman # markdown LSP (.NET binary — needs libicu, which Mason doesn't provide)
+    nixd     # Nix LSP server (used by the nix community pack)
+    deadnix  # Nix dead code linter (used by none-ls via the nix community pack)
+
     # Telescope dependencies
     ripgrep
     fd

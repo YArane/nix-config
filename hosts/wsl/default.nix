@@ -33,6 +33,10 @@
     ./zscaler-root.pem
   ];
 
+  # Provides a dynamic linker stub so Mason-downloaded binaries
+  # (and other pre-built tools) can run on NixOS.
+  programs.nix-ld.enable = true;
+
   programs.zsh.enable = true;
 
   users.users.yarden = {
