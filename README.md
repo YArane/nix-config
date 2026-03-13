@@ -44,8 +44,8 @@ nix shell nixpkgs#<name>
 ### See what's installed
 
 ```bash
-# Home Manager packages (declared in modules/home/)
-home-manager packages
+# Home Manager generation (includes package list)
+ls -la /etc/profiles/per-user/yarden/bin/
 
 # System packages
 nix-store -q --requisites /run/current-system | grep -v '\.drv$'
