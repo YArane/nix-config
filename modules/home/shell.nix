@@ -67,6 +67,23 @@
       # prevent Ctrl-d from exiting shell
       set -o ignoreeof
 
+      # smart Ctrl+R: history search when line is empty, file picker when there's text
+      fzf-smart-widget() {
+        if [[ -z "$BUFFER" ]]; then
+          fzf-history-widget
+        else
+          local orig="$LBUFFER"
+          LBUFFER="''${LBUFFER}**"
+          fzf-completion
+          # clean up leftover ** if completion was cancelled
+          if [[ "$LBUFFER" == *'**' ]]; then
+            LBUFFER="$orig"
+          fi
+        fi
+      }
+      zle -N fzf-smart-widget
+      bindkey '^R' fzf-smart-widget
+
       # launch tmux on startup
       if [ "$TMUX" = "" ]; then tmux; fi
     '';
