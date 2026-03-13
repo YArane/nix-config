@@ -3,10 +3,11 @@
 {
   programs.git = {
     enable = true;
-    settings.user = {
-      name = "YArane";
-      email = "yarden.arane@gmail.com";
-    };
+    settings.user.name = "YArane";
+
+    includes = [
+      { path = "/run/secrets-rendered/git-email-config"; }
+    ];
 
     settings = {
       merge.conflictstyle = "diff3";

@@ -1,5 +1,8 @@
 { pkgs, ... }:
 
+let
+  system = pkgs.stdenv.hostPlatform.system;
+in
 {
   home.packages = [ pkgs.claude-code ];
 

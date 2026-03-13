@@ -1,0 +1,7 @@
+keys:
+  - &yarden age1l7nwl5gf0j3ms5802gs9hjfnjtakpyh6gdsc9la9es8gl5yndqtqlp7fss
+creation_rules:
+  - path_regex: secrets/.*\.yaml$
+    key_groups:
+      - age:
+          - *yarden

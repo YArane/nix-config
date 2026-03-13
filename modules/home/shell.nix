@@ -31,6 +31,9 @@
       # bat
       cat = "bat -pp";
 
+      # secrets
+      sops = "nix shell nixpkgs#sops nixpkgs#age -c sops";
+
       # nix rebuild
       rebuild =
         if pkgs.stdenv.isLinux

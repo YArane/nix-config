@@ -1,4 +1,4 @@
-{ inputs, pkgs, ... }:
+{ inputs, config, pkgs, ... }:
 
 {
   wsl = {
@@ -11,6 +11,23 @@
   nix.settings.experimental-features = [ "nix-command" "flakes" ];
 
   nixpkgs.config.allowUnfree = true;
+
+  sops = {
+    defaultSopsFile = ../../secrets/secrets.yaml;
+    age.keyFile = "/home/yarden/.config/sops/age/keys.txt";
+
+    secrets = {
+      "git-email" = { owner = "yarden"; };
+    };
+
+    templates."git-email-config" = {
+      content = ''
+        [user]
+            email = ${config.sops.placeholder."git-email"}
+      '';
+      owner = "yarden";
+    };
+  };
 
   security.pki.certificateFiles = [
     ./zscaler-root.pem

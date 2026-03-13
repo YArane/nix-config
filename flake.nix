@@ -13,14 +13,20 @@
       url = "github:nix-community/NixOS-WSL";
       inputs.nixpkgs.follows = "nixpkgs";
     };
+
+    sops-nix = {
+      url = "github:Mic92/sops-nix";
+      inputs.nixpkgs.follows = "nixpkgs";
+    };
   };
 
-  outputs = { nixpkgs, home-manager, nixos-wsl, ... }@inputs: {
+  outputs = { nixpkgs, home-manager, nixos-wsl, sops-nix, ... }@inputs: {
     nixosConfigurations.wsl = nixpkgs.lib.nixosSystem {
       system = "x86_64-linux";
       specialArgs = { inherit inputs; };
       modules = [
         nixos-wsl.nixosModules.default
+        sops-nix.nixosModules.sops
         home-manager.nixosModules.home-manager
         ./hosts/wsl
       ];
