@@ -3,6 +3,7 @@
 {
   imports = [
     ./claude-code.nix
+    ./editor.nix
     ./git.nix
     ./packages.nix
     ./shell.nix
