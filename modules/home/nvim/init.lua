@@ -15,7 +15,12 @@ require("lazy").setup({
     "AstroNvim/AstroNvim",
     version = "^5",
     import = "astronvim.plugins",
+    opts = {
+      mapleader = ",",
+      maplocalleader = ",",
+    },
   },
+  { import = "community" },
   { import = "plugins" },
 }, {
   -- Move lockfile to writable location (config dir has Nix store symlinks)
