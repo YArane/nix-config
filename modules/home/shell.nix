@@ -72,31 +72,39 @@
     '';
   };
 
-  # fzf with shell integration and monokai-inspired colors
+  # fzf with shell integration — AstroTheme astrodark palette
   programs.fzf = {
     enable = true;
     enableZshIntegration = true;
     defaultOptions = [
       "--height=40%"
       "--layout=reverse"
+      #"--border=none"
       "--border"
       "--margin=0"
       "--padding=0"
+      "--highlight-line"
+      #"--info=inline-right"
+      "--ansi"
     ];
     colors = {
-      "bg+" = "#293739";
-      bg = "#1B1D1E";
-      border = "#808080";
-      spinner = "#E6DB74";
-      hl = "#7E8E91";
-      fg = "#F8F8F2";
-      header = "#7E8E91";
-      info = "#A6E22E";
-      pointer = "#A6E22E";
-      marker = "#F92672";
-      "fg+" = "#F8F8F2";
-      prompt = "#F92672";
-      "hl+" = "#F92672";
+      "bg+"      = "#3A3E47";
+      bg         = "#1A1D23";
+      border     = "#9B9FA9";
+      "fg+"      = "#ADB0BB";
+      fg         = "#ADB0BB";
+      gutter     = "#1A1D23";
+      header     = "#50A4E9";
+      "hl+"      = "#5EB7FF";
+      hl         = "#5EB7FF";
+      info       = "#9B9FA9";
+      marker     = "#5EB7FF";
+      pointer    = "#5EB7FF";
+      prompt     = "#5EB7FF";
+      query      = "#ADB0BB:regular";
+      scrollbar  = "#9B9FA9";
+      separator  = "#9B9FA9";
+      spinner    = "#5EB7FF";
     };
   };
 
