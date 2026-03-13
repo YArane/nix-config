@@ -3,7 +3,7 @@
 {
   wsl = {
     enable = true;
-    defaultUser = "nixos";
+    defaultUser = "yarden";
   };
 
   networking.hostName = "nixos-wsl";
@@ -18,7 +18,7 @@
 
   programs.zsh.enable = true;
 
-  users.users.nixos = {
+  users.users.yarden = {
     isNormalUser = true;
     extraGroups = [ "wheel" ];
     shell = pkgs.zsh;
@@ -29,7 +29,7 @@
     useUserPackages = true;
     backupFileExtension = "hm-backup";
     extraSpecialArgs = { inherit inputs; };
-    users.nixos = import ../../modules/home;
+    users.yarden = import ../../modules/home;
   };
 
   system.stateVersion = "24.05";

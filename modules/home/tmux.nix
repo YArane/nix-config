@@ -1,4 +1,4 @@
-{ pkgs, ... }:
+{ lib, pkgs, ... }:
 
 {
   programs.tmux = {
@@ -27,8 +27,8 @@
       unbind -n MouseDown3Status
       unbind -n MouseDown3StatusLeft
       unbind -n MouseDown3StatusRight
-      bind-key -n MouseDown3Pane run "tmux set-buffer \"\$(powershell.exe -c Get-Clipboard | tr -d '\\r')\"; tmux paste-buffer"
-      #bind-key -n MouseDown3Pane run "tmux set-buffer \"\$(pbpaste)\"; tmux paste-buffer"
+      ${lib.optionalString pkgs.stdenv.isLinux ''bind-key -n MouseDown3Pane run "tmux set-buffer \"\$(powershell.exe -c Get-Clipboard | tr -d '\\r')\"; tmux paste-buffer"''}
+      ${lib.optionalString pkgs.stdenv.isDarwin ''bind-key -n MouseDown3Pane run "tmux set-buffer \"\$(pbpaste)\"; tmux paste-buffer"''}
 
       # vi status keys (command prompt)
       set -g status-keys vi

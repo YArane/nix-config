@@ -1,7 +1,8 @@
 { lib, pkgs, config, ... }:
 
 let
-  # Windows APPDATA path as seen from WSL (for syncing Alacritty config)
+  # Windows APPDATA path as seen from WSL (for syncing Alacritty config).
+  # NOTE: This username is machine-specific — update if your Windows username differs.
   windowsAppData = "/mnt/c/Users/Yarden.Arane/AppData/Roaming";
 in
 {
@@ -13,7 +14,7 @@ in
       env.TERM = "xterm-256color";
 
       general.working_directory = lib.mkIf pkgs.stdenv.isLinux
-        "//wsl$/NixOS/home/nixos";
+        "//wsl$/NixOS/home/yarden";
 
       window.dimensions = { columns = 160; lines = 48; };
 

@@ -1,4 +1,4 @@
-{ pkgs, ... }:
+{ lib, pkgs, ... }:
 
 {
   programs.zsh = {
@@ -32,7 +32,10 @@
       cat = "bat -pp";
 
       # nix rebuild
-      rebuild = "sudo nixos-rebuild switch --flake ~/nix-config#wsl";
+      rebuild =
+        if pkgs.stdenv.isLinux
+        then "sudo nixos-rebuild switch --flake ~/nix-config#wsl"
+        else "darwin-rebuild switch --flake ~/nix-config#darwin";
     };
 
     sessionVariables = {
