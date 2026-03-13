@@ -30,13 +30,16 @@
 
       # bat
       cat = "bat -pp";
+
+      # nix rebuild
+      rebuild = "sudo nixos-rebuild switch --flake ~/nix-config#wsl";
     };
 
     sessionVariables = {
       TERM = "xterm-256color";
     };
 
-    initExtra = ''
+    initContent = ''
       # Navigation keybindings
       bindkey '^[[1;5D' beginning-of-line  # Ctrl+Left  → beginning of line
       bindkey '^[[1;5C' end-of-line        # Ctrl+Right → end of line
@@ -49,11 +52,11 @@
       setopt inc_append_history
       unsetopt share_history
 
-      # tree listing function
-      lt() {
-        local level=''${1:-2}
-        eza --tree --level="$level" --color=always --group-directories-first --icons
-      }
+      # tree listing function — using eza module's built-in lt alias instead
+      # lt() {
+      #   local level=''${1:-2}
+      #   eza --tree --level="$level" --color=always --group-directories-first --icons
+      # }
 
       # prevent Ctrl-d from exiting shell
       set -o ignoreeof
