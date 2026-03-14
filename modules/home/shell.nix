@@ -133,4 +133,10 @@
 
   # zoxide (smarter cd) with shell integration
   programs.zoxide.enable = true;
+
+  # direnv — auto-activates per-project devShells on cd
+  programs.direnv = {
+    enable = true;
+    nix-direnv.enable = true;  # caches devShell environments
+  };
 }

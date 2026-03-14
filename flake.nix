@@ -31,5 +31,10 @@
         ./hosts/wsl
       ];
     };
+
+    templates.java = {
+      path = ./templates/java;
+      description = "Java devShell with JDK and Maven";
+    };
   };
 }
