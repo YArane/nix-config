@@ -22,9 +22,16 @@
     gnumake
 
     # LSP servers installed via Nix (Mason can't run these on NixOS)
-    marksman # markdown LSP (.NET binary — needs libicu, which Mason doesn't provide)
-    nixd     # Nix LSP server (used by the nix community pack)
-    deadnix  # Nix dead code linter (used by none-ls via the nix community pack)
+    marksman      # markdown LSP (.NET binary — needs libicu, which Mason doesn't provide)
+    nixd          # Nix LSP server (used by the nix community pack)
+    deadnix       # Nix dead code linter (used by none-ls via the nix community pack)
+    basedpyright  # Python LSP (python pack)
+    ruff          # Python linter/formatter (python pack)
+    black         # Python formatter (python pack)
+    isort         # Python import sorter (python pack)
+    python3Packages.debugpy  # Python debug adapter (python pack)
+    sqls          # SQL LSP (sql pack)
+    sqlfluff      # SQL linter/formatter (sql pack)
 
     # Telescope dependencies
     ripgrep
