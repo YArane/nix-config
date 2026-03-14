@@ -1,10 +1,5 @@
 { lib, pkgs, config, ... }:
 
-let
-  # Windows APPDATA path as seen from WSL (for syncing Alacritty config).
-  # NOTE: This username is machine-specific — update if your Windows username differs.
-  windowsAppData = "/mnt/c/Users/Yarden.Arane/AppData/Roaming";
-in
 {
   programs.alacritty = {
     enable = true;
@@ -14,7 +9,7 @@ in
       env.TERM = "xterm-256color";
 
       general.working_directory = lib.mkIf pkgs.stdenv.isLinux
-        "//wsl$/NixOS/home/yarden";
+        "//wsl$/NixOS/home/${config.home.username}";
 
       window.dimensions = { columns = 160; lines = 48; };
 
@@ -78,10 +73,15 @@ in
   # %APPDATA%\alacritty\. Copy the HM-generated config there on every rebuild.
   home.activation.copyAlacrittyToWindows = lib.mkIf pkgs.stdenv.isLinux (
     lib.hm.dag.entryAfter [ "linkGeneration" ] ''
-      alacritty_src="${config.xdg.configHome}/alacritty/alacritty.toml"
-      alacritty_dst="${windowsAppData}/alacritty/alacritty.toml"
-      run mkdir -p "${windowsAppData}/alacritty"
-      run install -m 644 "$alacritty_src" "$alacritty_dst"
+      win_user="$(/mnt/c/Windows/system32/cmd.exe /c "echo %USERNAME%" 2>/dev/null | tr -d '\r')"
+      if [ -z "$win_user" ]; then
+        echo "WARNING: Could not detect Windows username; skipping Alacritty config copy"
+      else
+        alacritty_src="${config.xdg.configHome}/alacritty/alacritty.toml"
+        alacritty_dst="/mnt/c/Users/$win_user/AppData/Roaming/alacritty/alacritty.toml"
+        run mkdir -p "/mnt/c/Users/$win_user/AppData/Roaming/alacritty"
+        run install -m 644 "$alacritty_src" "$alacritty_dst"
+      fi
     ''
   );
 }

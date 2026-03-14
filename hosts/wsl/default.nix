@@ -1,9 +1,12 @@
 { inputs, config, pkgs, ... }:
 
+let
+  username = "yarden";
+in
 {
   wsl = {
     enable = true;
-    defaultUser = "yarden";
+    defaultUser = username;
   };
 
   networking.hostName = "nixos-wsl";
@@ -14,10 +17,10 @@
 
   sops = {
     defaultSopsFile = ../../secrets/secrets.yaml;
-    age.keyFile = "/home/yarden/.config/sops/age/keys.txt";
+    age.keyFile = "/home/${username}/.config/sops/age/keys.txt";
 
     secrets = {
-      "git-email" = { owner = "yarden"; };
+      "git-email" = { owner = username; };
     };
 
     templates."git-email-config" = {
@@ -25,7 +28,7 @@
         [user]
             email = ${config.sops.placeholder."git-email"}
       '';
-      owner = "yarden";
+      owner = username;
     };
   };
 
@@ -39,7 +42,7 @@
 
   programs.zsh.enable = true;
 
-  users.users.yarden = {
+  users.users.${username} = {
     isNormalUser = true;
     extraGroups = [ "wheel" ];
     shell = pkgs.zsh;
@@ -50,7 +53,7 @@
     useUserPackages = true;
     backupFileExtension = "hm-backup";
     extraSpecialArgs = { inherit inputs; };
-    users.yarden = import ../../modules/home;
+    users.${username} = import ../../modules/home;
   };
 
   system.stateVersion = "24.05";
