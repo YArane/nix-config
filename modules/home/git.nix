@@ -3,10 +3,9 @@
 {
   programs.git = {
     enable = true;
-    userName = "YArane";
-    userEmail = "yarden.arane@gmail.com";
-
     settings = {
+      user.name = "YArane";
+      user.email = "yarden.arane@gmail.com";
       merge.conflictstyle = "diff3";
       diff.colorMoved = "default";
     };
