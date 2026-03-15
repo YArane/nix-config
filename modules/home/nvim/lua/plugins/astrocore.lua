@@ -3,6 +3,19 @@
 return {
   "AstroNvim/astrocore",
   opts = {
+    autocmds = {
+      markdown_wrap = {
+        {
+          event = "FileType",
+          pattern = "markdown",
+          desc = "Enable line wrap in markdown files",
+          callback = function()
+            vim.opt_local.wrap = true
+            vim.opt_local.linebreak = true
+          end,
+        },
+      },
+    },
     mappings = {
       n = {
         -- diable default bindings
