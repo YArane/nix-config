@@ -1,6 +1,8 @@
-# macOS Setup
+# macOS Setup (Intel)
 
-Everything needed to go from a fresh macOS machine to a working nix-darwin environment.
+Everything needed to go from a fresh Intel Mac to a working nix-darwin environment.
+
+> **Note:** Determinate Systems [dropped x86_64-darwin support](https://determinate.systems/blog/changelog-determinate-nix-3132/) in Determinate Nix 3.13.2, so this guide uses the official Nix installer instead.
 
 ## Prerequisites
 
@@ -14,32 +16,40 @@ Required for git and basic build tools before Nix is installed.
 
 ## Fresh install
 
-### Before you start
-
-The macOS username is set in `hosts/darwin/default.nix` (the `username` variable). It must match your macOS login username exactly — unlike WSL, the user already exists on macOS.
-
 ### Steps
 
-1. Install Nix using the Determinate Systems installer:
+1. Install Nix using the official installer:
    ```bash
-   curl --proto '=https' --tlsv1.2 -sSf -L \
-     https://install.determinate.systems/nix | sh -s -- install
+   sh <(curl -L https://nixos.org/nix/install)
    ```
-   This handles macOS-specific setup (creating the Nix APFS volume, configuring synthetic.conf, etc.) and enables flakes by default. Follow the prompts, then open a new terminal.
+   Follow the prompts — the installer handles macOS-specific setup (creating the Nix APFS volume, configuring synthetic.conf, etc.). When it finishes, open a new terminal.
 
-2. Clone this repo:
+2. Install Homebrew (required by nix-darwin's `homebrew` module — Nix can't install it):
+   ```bash
+   /bin/bash -c "$(curl -fsSL https://raw.githubusercontent.com/Homebrew/install/HEAD/install.sh)"
+   ```
+
+3. Clone this repo:
    ```bash
    git clone https://github.com/YArane/nix-config.git
    cd nix-config
    ```
+> **Note:** The macOS username is set in `hosts/darwin/default.nix` (the `username` variable). It must match your macOS login username exactly — unlike WSL, the user already exists on macOS.
 
-3. Bootstrap nix-darwin (first run only — nix-darwin isn't installed yet, so use `nix run`):
+4. Back up shell files that nix-darwin needs to manage (one-time, on a fresh macOS):
    ```bash
-   nix run nix-darwin -- switch --flake .#darwin
+   sudo mv /etc/bashrc /etc/bashrc.before-nix-darwin
+   sudo mv /etc/zshrc /etc/zshrc.before-nix-darwin
    ```
-   This installs nix-darwin, applies the full system configuration, and installs Homebrew automatically. The first build will take a while.
+   nix-darwin writes its own versions of these to set up the Nix shell environment. It won't overwrite unrecognized files, so the originals must be moved first.
 
-4. After the first build, subsequent rebuilds use the alias:
+5. Bootstrap nix-darwin (first run only — nix-darwin isn't installed yet, so use `nix run`):
+   ```bash
+   sudo nix --extra-experimental-features "nix-command flakes" run nix-darwin -- switch --flake .#darwin
+   ```
+   This installs nix-darwin and applies the full system configuration. The first build will take a while.
+
+6. After the first build, subsequent rebuilds use the alias:
    ```bash
    rebuild
    ```

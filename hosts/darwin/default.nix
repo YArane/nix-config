@@ -15,6 +15,7 @@ in
   programs.zsh.enable = true;
 
   # ── User ──────────────────────────────────────────────────────────
+  system.primaryUser = username;
   users.users.${username} = {
     home = "/Users/${username}";
   };
@@ -41,7 +42,7 @@ in
 
   # ── macOS defaults ───────────────────────────────────────────────
   system.defaults = {
-    dock.autohide = true;
+    dock.autohide = false;
     finder.AppleShowAllExtensions = true;
     NSGlobalDomain.AppleShowAllExtensions = true;
   };
