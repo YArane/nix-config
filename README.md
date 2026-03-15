@@ -10,7 +10,7 @@ NixOS (WSL) and macOS configuration managed with Nix flakes and Home Manager.
 # WSL
 sudo nixos-rebuild switch --flake .#wsl
 
-# macOS (when added)
+# macOS
 darwin-rebuild switch --flake .#darwin
 ```
 
@@ -65,12 +65,14 @@ sudo nixos-rebuild switch --rollback
 
 ## Setting up on a new machine
 
-See [WINDOWS.md](WINDOWS.md) for Windows-side prerequisites and the full WSL setup walkthrough.
+- [WINDOWS.md](WINDOWS.md) — Windows-side prerequisites and WSL setup walkthrough
+- [MACOS.md](MACOS.md) — fresh macOS setup with nix-darwin
 ## Structure
 
 ```
 flake.nix              ← entry point
 hosts/wsl/             ← NixOS-WSL system config
+hosts/darwin/          ← nix-darwin macOS config
 modules/home/          ← Home Manager modules (shared across platforms)
   shell.nix            ← zsh, aliases
   git.nix              ← git + delta
