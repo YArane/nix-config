@@ -3,7 +3,7 @@
 {
   programs.alacritty = {
     enable = true;
-    package = null; # Alacritty is a Windows app on WSL
+    package = null; # binary managed outside Nix (Windows app on WSL, Homebrew cask on macOS)
 
     settings = {
       env.TERM = "xterm-256color";

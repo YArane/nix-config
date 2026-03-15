@@ -14,9 +14,14 @@
       inputs.nixpkgs.follows = "nixpkgs";
     };
 
+    nix-darwin = {
+      url = "github:nix-darwin/nix-darwin";
+      inputs.nixpkgs.follows = "nixpkgs";
+    };
+
   };
 
-  outputs = { nixpkgs, home-manager, nixos-wsl, ... }@inputs: {
+  outputs = { nixpkgs, home-manager, nixos-wsl, nix-darwin, ... }@inputs: {
     nixosConfigurations.wsl = nixpkgs.lib.nixosSystem {
       system = "x86_64-linux";
       specialArgs = { inherit inputs; };
@@ -24,6 +29,15 @@
         nixos-wsl.nixosModules.default
         home-manager.nixosModules.home-manager
         ./hosts/wsl
+      ];
+    };
+
+    darwinConfigurations.darwin = nix-darwin.lib.darwinSystem {
+      system = "x86_64-darwin";
+      specialArgs = { inherit inputs; };
+      modules = [
+        home-manager.darwinModules.home-manager
+        ./hosts/darwin
       ];
     };
 
