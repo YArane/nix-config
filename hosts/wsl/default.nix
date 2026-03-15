@@ -7,6 +7,7 @@ in
   wsl = {
     enable = true;
     defaultUser = username;
+    interop.register = true; # re-register binfmt handler so .exe files work (e.g. powershell.exe for clipboard)
   };
 
   networking.hostName = "nixos-wsl";
