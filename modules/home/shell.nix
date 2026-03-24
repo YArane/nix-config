@@ -97,8 +97,10 @@
       zle -N fzf-smart-widget
       bindkey '^R' fzf-smart-widget
 
-      # launch tmux on startup
-      if [ "$TMUX" = "" ]; then tmux; fi
+      # launch tmux on startup — skip when IntelliJ (or other IDEs) spawn
+      # shells to read the environment; without these guards each spawned
+      # shell creates a stray tmux session in /tmp
+      if [ "$TMUX" = "" ] && [ -z "$TERMINAL_EMULATOR" ] && [ -z "$INTELLIJ_ENVIRONMENT_READER" ] && [[ "$PWD" != /tmp/* ]]; then tmux; fi
     '';
   };
 
