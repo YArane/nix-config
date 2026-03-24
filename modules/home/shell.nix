@@ -7,6 +7,10 @@
     oh-my-zsh = {
       enable = true;
       theme = "pygmalion";
+      extraConfig = ''
+        # Skip all plugin aliases — lets our shellAliases be the sole source
+        zstyle ':omz:plugins:*' aliases no
+      '';
     };
 
     autosuggestion.enable = true;
@@ -63,6 +67,15 @@
       #   local level=''${1:-2}
       #   eza --tree --level="$level" --color=always --group-directories-first --icons
       # }
+
+      # Fix tab completion for eza aliases (ls, ll, etc.)
+      # By default zsh expands aliases before looking up completers, so "ls <TAB>"
+      # runs the _eza completer (since ls aliases to eza). _eza's completer then
+      # offers --color= values (always, auto, never) instead of just files.
+      # COMPLETE_ALIASES stops alias expansion during completion, and compdef _files
+      # tells zsh to use plain file completion for these alias names.
+      setopt COMPLETE_ALIASES
+      compdef _files ls l la ll llm lls lx
 
       # prevent Ctrl-d from exiting shell
       set -o ignoreeof
