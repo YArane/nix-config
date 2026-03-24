@@ -5,6 +5,7 @@
     ./claude-code.nix
     ./editor.nix
     ./git.nix
+    ./ideavim.nix
     ./packages.nix
     ./shell.nix
     ./ssh.nix
