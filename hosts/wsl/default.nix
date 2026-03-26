@@ -37,7 +37,12 @@ in
     useUserPackages = true;
     backupFileExtension = "hm-backup";
     extraSpecialArgs = { inherit inputs; };
-    users.${username} = import ../../modules/home;
+    users.${username} = {
+      imports = [
+        ../../modules/home
+        ../../modules/home/cloud.nix
+      ];
+    };
   };
 
   system.stateVersion = "24.05";
