@@ -24,13 +24,16 @@
       vi = "nvim";
 
       # eza
-      ls = "eza --color=always --group-directories-first --icons";
-      ll = "eza -la --icons --git --no-permissions --group-directories-first";
-      llm = "eza -lb --header --sort=modified --color=always --icons";
-      lls = "eza -lb --header --sort=size --reverse --color=always --icons";
-      la = "eza -la --icons --octal-permissions --group-directories-first";
-      lx = "eza -lbhHigUmuSa@ --time-style=long-iso --git --color-scale --color=always --group-directories-first --icons";
-      l = "eza -1 --color=always --group-directories-first --icons";
+      # NOTE: --icons takes an optional WHEN value, so a bare `--icons` swallows
+      # the next argument (`ls templates/` → "invalid value 'templates/'").
+      # Always write it as --icons=auto so the value is bound to the flag.
+      ls = "eza --color=always --group-directories-first --icons=auto";
+      ll = "eza -la --icons=auto --git --no-permissions --group-directories-first";
+      llm = "eza -lb --header --sort=modified --color=always --icons=auto";
+      lls = "eza -lb --header --sort=size --reverse --color=always --icons=auto";
+      la = "eza -la --icons=auto --octal-permissions --group-directories-first";
+      lx = "eza -lbhHigUmuSa@ --time-style=long-iso --git --color-scale --color=always --group-directories-first --icons=auto";
+      l = "eza -1 --color=always --group-directories-first --icons=auto";
 
       # bat
       cat = "bat -pp";
@@ -68,7 +71,7 @@
       # tree listing function — using eza module's built-in lt alias instead
       # lt() {
       #   local level=''${1:-2}
-      #   eza --tree --level="$level" --color=always --group-directories-first --icons
+      #   eza --tree --level="$level" --color=always --group-directories-first --icons=auto
       # }
 
       # Fix tab completion for eza aliases (ls, ll, etc.)
