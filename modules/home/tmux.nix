@@ -1,5 +1,8 @@
-{ lib, pkgs, ... }:
+{ lib, pkgs, osConfig, ... }:
 
+let
+  isWSL = osConfig.wsl.enable or false;
+in
 {
   programs.tmux = {
     enable = true;
@@ -27,7 +30,9 @@
       unbind -n MouseDown3Status
       unbind -n MouseDown3StatusLeft
       unbind -n MouseDown3StatusRight
-      ${lib.optionalString pkgs.stdenv.isLinux ''bind-key -n MouseDown3Pane run "tmux set-buffer \"''$(/mnt/c/Windows/System32/WindowsPowerShell/v1.0/powershell.exe -c Get-Clipboard | tr -d '\r')\"; tmux paste-buffer"''}
+      ${lib.optionalString pkgs.stdenv.isLinux (if isWSL
+        then ''bind-key -n MouseDown3Pane run "tmux set-buffer \"''$(/mnt/c/Windows/System32/WindowsPowerShell/v1.0/powershell.exe -c Get-Clipboard | tr -d '\r')\"; tmux paste-buffer"''
+        else ''bind-key -n MouseDown3Pane run "tmux set-buffer \"''$(${pkgs.wl-clipboard}/bin/wl-paste --no-newline)\"; tmux paste-buffer"'')}
       ${lib.optionalString pkgs.stdenv.isDarwin ''bind-key -n MouseDown3Pane run "tmux set-buffer \"''$(pbpaste)\"; tmux paste-buffer"''}
 
       # vi status keys (command prompt)

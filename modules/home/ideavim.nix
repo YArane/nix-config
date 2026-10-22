@@ -1,8 +1,11 @@
-{ lib, pkgs, config, ... }:
+{ lib, config, osConfig, ... }:
 
+let
+  isWSL = osConfig.wsl.enable or false;
+in
 {
   # IdeaVim config for IntelliJ IDEA
-  # On macOS, IntelliJ reads ~/.ideavimrc directly.
+  # On macOS and native NixOS, IntelliJ reads ~/.ideavimrc directly.
   # On WSL, the activation script copies it to the Windows home directory.
   home.file.".ideavimrc".text = ''
     inoremap jk <esc>
@@ -32,7 +35,7 @@
 
   # On WSL, IntelliJ runs as a Windows app and reads .ideavimrc from
   # the Windows home directory. Copy the HM-generated file there on every rebuild.
-  home.activation.copyIdeavimrcToWindows = lib.mkIf pkgs.stdenv.isLinux (
+  home.activation.copyIdeavimrcToWindows = lib.mkIf isWSL (
     lib.hm.dag.entryAfter [ "linkGeneration" ] ''
       win_user="$(/mnt/c/Windows/system32/cmd.exe /c "echo %USERNAME%" 2>/dev/null | tr -d '\r')"
       if [ -z "$win_user" ]; then

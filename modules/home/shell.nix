@@ -1,5 +1,8 @@
-{ lib, pkgs, ... }:
+{ lib, pkgs, osConfig, ... }:
 
+let
+  isWSL = osConfig.wsl.enable or false;
+in
 {
   programs.zsh = {
     enable = true;
@@ -47,7 +50,7 @@
       # nix rebuild
       rebuild =
         if pkgs.stdenv.isLinux
-        then "sudo nixos-rebuild switch --flake ~/nix-config#wsl"
+        then "sudo nixos-rebuild switch --flake ~/nix-config#${if isWSL then "wsl" else "desktop"}"
         else "sudo darwin-rebuild switch --flake ~/nix-config#darwin";
     };
 

@@ -1,6 +1,6 @@
 # nix-config
 
-NixOS (WSL) and macOS configuration managed with Nix flakes and Home Manager.
+NixOS (WSL and a native desktop) and macOS configuration managed with Nix flakes and Home Manager.
 
 ## Quick Reference
 
@@ -9,6 +9,9 @@ NixOS (WSL) and macOS configuration managed with Nix flakes and Home Manager.
 ```bash
 # WSL
 sudo nixos-rebuild switch --flake .#wsl
+
+# NixOS desktop
+sudo nixos-rebuild switch --flake .#desktop
 
 # macOS
 darwin-rebuild switch --flake .#darwin
@@ -67,12 +70,17 @@ sudo nixos-rebuild switch --rollback
 
 - [WINDOWS.md](WINDOWS.md) — Windows-side prerequisites and WSL setup walkthrough
 - [MACOS.md](MACOS.md) — fresh macOS setup with nix-darwin
+- [LINUX.md](LINUX.md) — native NixOS desktop setup
+
 ## Structure
 
 ```
 flake.nix              ← entry point
 hosts/wsl/             ← NixOS-WSL system config
+hosts/desktop/         ← native NixOS desktop (Plasma, gaming, GPU, keyboard)
 hosts/darwin/          ← nix-darwin macOS config
+modules/nixos/         ← NixOS config shared by wsl + desktop
+  common.nix           ← nix settings, user, zsh, nix-ld, docker, Home Manager wiring
 modules/home/          ← Home Manager modules (shared across platforms)
   shell.nix            ← zsh, aliases
   git.nix              ← git + delta

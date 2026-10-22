@@ -48,10 +48,17 @@ nix-config/
 │
 ├── hosts/
 │   ├── wsl/default.nix         ← NixOS-WSL system config
+│   ├── desktop/                ← native NixOS desktop
+│   │   ├── default.nix         ← boot, Plasma, audio, fonts, GUI apps
+│   │   ├── hardware-configuration.nix ← generated on the machine
+│   │   ├── nvidia.nix          ← GPU driver (temporary: GTX 1050 Ti)
+│   │   ├── gaming.nix          ← Steam, Proton-GE, gamemode, gamescope
+│   │   └── keyboard.nix        ← keyd remaps
 │   └── darwin/default.nix      ← nix-darwin system config
 │
 └── modules/
-    └── home/                   ← Home Manager modules; shared across both platforms
+    ├── nixos/common.nix        ← NixOS config shared by wsl + desktop
+    └── home/                   ← Home Manager modules; shared across all hosts
         ├── default.nix         ← imports all active home modules
         ├── shell.nix           ← zsh, tmux, oh-my-zsh, aliases
         ├── editor.nix          ← neovim
@@ -65,15 +72,15 @@ Each host's Home Manager block imports `modules/home` directly — there is no s
 config. This is a single-user setup; if multi-user is ever needed, a `users/` directory
 can be added then.
 
-Platform-specific system config (NixOS options for WSL, nix-darwin options for macOS)
-lives directly in `hosts/<os>/default.nix`. There are no separate `modules/nixos/` or
-`modules/darwin/` directories — with one host per platform, a shared-modules layer would
-be pure indirection. If we add a second host for either platform, we can extract shared
-config into `modules/` then.
+Host-specific system config lives in `hosts/<host>/`. NixOS config shared by both
+NixOS hosts (wsl, desktop) lives in `modules/nixos/common.nix`; each NixOS host sets
+`_module.args.username` so shared modules can refer to the user. There is no
+`modules/darwin/` — with one darwin host, it would be pure indirection.
 
 When I ask to install or configure something, the default assumption is:
 - **User-level tools and dotfiles** → `modules/home/` (via Home Manager)
-- **System-level NixOS options** → `hosts/wsl/default.nix`
+- **System-level NixOS options** → `modules/nixos/common.nix` if both NixOS hosts
+  need it, otherwise `hosts/wsl/` or `hosts/desktop/`
 - **macOS system behavior or Homebrew casks** → `hosts/darwin/default.nix`
 - **Project-specific dev tooling** → `devShells` in `flake.nix`, NOT `home.packages`
 
@@ -115,8 +122,8 @@ should follow the root nixpkgs to avoid duplicate versions in the lock file.
 **Use `github:nix-darwin/nix-darwin`** — the canonical upstream URL for nix-darwin
 (not the older `github:LnL7/nix-darwin`).
 
-**Single `nixpkgs-unstable` input for both hosts** — we use one nixpkgs input
-(`nixpkgs-unstable`) for macOS and WSL. This keeps the flake simple and avoids
+**Single `nixpkgs-unstable` input for all hosts** — we use one nixpkgs input
+(`nixpkgs-unstable`) for macOS, WSL and the desktop. This keeps the flake simple and avoids
 maintaining two lock entries. If we ever hit a NixOS-specific issue on the WSL host
 that requires a `nixos-*` branch, we can evaluate a second input then.
 
@@ -170,12 +177,13 @@ single attributes, `lib.mkDefault` and `lib.mkForce` control merge priority.
 
 ## Platform Awareness
 
-This config targets two platforms. Always be explicit about which platform a change
+This config targets three hosts. Always be explicit about which one a change
 applies to:
 
-| Platform | System rebuild command | Config root |
+| Host | System rebuild command | Config root |
 |---|---|---|
 | WSL (NixOS) | `sudo nixos-rebuild switch --flake .#wsl` | `hosts/wsl/` |
+| Desktop (native NixOS) | `sudo nixos-rebuild switch --flake .#desktop` | `hosts/desktop/` |
 | macOS | `darwin-rebuild switch --flake .#darwin` | `hosts/darwin/` |
 
 Home Manager is activated through the system rebuild on every host — there is no
@@ -183,10 +191,17 @@ standalone `home-manager switch` target. If we ever add a non-NixOS Linux host t
 lacks nix-darwin or nixos-rebuild, we'll need a standalone HM target for that host
 specifically.
 
-Home Manager modules in `modules/home/` apply to both platforms automatically. If
+Home Manager modules in `modules/home/` apply to all hosts automatically. If
 something only makes sense on one platform, use `lib.mkIf pkgs.stdenv.isDarwin` /
 `lib.mkIf pkgs.stdenv.isLinux` conditionals within the shared module, or put it in
-the platform-specific host config.
+the host config.
+
+**`isLinux` is not the same as WSL.** Anything that touches Windows (`/mnt/c`,
+`powershell.exe`, `wsl.exe`) must be gated on WSL specifically:
+```nix
+{ osConfig, ... }:
+let isWSL = osConfig.wsl.enable or false; in   # `wsl` only exists on the WSL host
+```
 
 ---
 
@@ -210,6 +225,10 @@ homebrew = {
 This is the standard approach because most macOS GUI apps aren't in nixpkgs, and even
 when they are, they often don't integrate properly (no dock icon, no Spotlight indexing).
 Homebrew casks handle macOS integration correctly.
+
+**Native NixOS (desktop) — install from nixpkgs.** GUI apps go in
+`environment.systemPackages` in `hosts/desktop/default.nix`, or `programs.<app>` where a
+NixOS/HM module exists (e.g. `programs.steam`). No manual installs.
 
 **WSL — Windows GUI apps are outside Nix's reach.** Chrome, VLC, IntelliJ, etc. on
 Windows are native Windows apps managed by `winget`, `scoop`, or manual install. Nix
@@ -236,9 +255,8 @@ These are things we are NOT implementing now but that should inform structural d
   version of a single package, we'll evaluate the simplest option at that time: an
   overlay, a second nixpkgs input, or a direct `fetchFromGitHub`. We're not committing
   to a pattern before we need one.
-- **Shared platform modules** — if we add a second NixOS host or a second darwin host,
-  we'll extract shared system config from the host files into `modules/nixos/` or
-  `modules/darwin/`. Until then, host-specific config stays in `hosts/<os>/`.
+- **Shared darwin modules** — if we add a second darwin host, extract shared config
+  into `modules/darwin/` (as was done for NixOS in `modules/nixos/common.nix`).
 - **sops-nix for secrets** — when we need to manage passwords, API keys, or SSH keys
   declaratively, sops-nix is the standard approach. Don't put secrets in the Nix store.
 - **flake-parts** — a framework for writing modular flakes using the NixOS module system.

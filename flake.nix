@@ -1,5 +1,5 @@
 {
-  description = "NixOS configuration for WSL and macOS";
+  description = "NixOS configuration for WSL, a native NixOS desktop, and macOS";
 
   inputs = {
     nixpkgs.url = "github:NixOS/nixpkgs/nixpkgs-unstable";
@@ -49,6 +49,16 @@
           home-manager.nixosModules.home-manager
           overlaysModule
           ./hosts/wsl
+        ];
+      };
+
+      nixosConfigurations.desktop = nixpkgs.lib.nixosSystem {
+        system = "x86_64-linux";
+        specialArgs = { inherit inputs; };
+        modules = [
+          home-manager.nixosModules.home-manager
+          overlaysModule
+          ./hosts/desktop
         ];
       };
 

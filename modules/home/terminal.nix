@@ -1,19 +1,26 @@
-{ lib, pkgs, config, ... }:
+{ lib, pkgs, config, osConfig, ... }:
 
+let
+  # True only on the NixOS-WSL host. `osConfig` is the host's system config;
+  # the `wsl` option only exists when the NixOS-WSL module is loaded, so
+  # `or false` covers native NixOS and macOS.
+  isWSL = osConfig.wsl.enable or false;
+in
 {
   programs.alacritty = {
     enable = true;
-    package = null; # binary managed outside Nix (Windows app on WSL, Homebrew cask on macOS)
+    # WSL: Windows app; macOS: Homebrew cask; native NixOS: installed from nixpkgs.
+    package = if isWSL || pkgs.stdenv.hostPlatform.isDarwin then null else pkgs.alacritty;
 
     settings = {
       env.TERM = "xterm-256color";
 
-      general.working_directory = lib.mkIf pkgs.stdenv.isLinux
+      general.working_directory = lib.mkIf isWSL
         "//wsl$/NixOS/home/${config.home.username}";
 
       window.dimensions = { columns = 160; lines = 48; };
 
-      terminal = lib.mkIf pkgs.stdenv.isLinux {
+      terminal = lib.mkIf isWSL {
         shell = {
           program = "C:\\\\Windows\\\\System32\\\\wsl.exe";
           args = [ "-d" "NixOS" ];
@@ -71,7 +78,7 @@
 
   # On WSL, Alacritty runs as a Windows app and reads config from
   # %APPDATA%\alacritty\. Copy the HM-generated config there on every rebuild.
-  home.activation.copyAlacrittyToWindows = lib.mkIf pkgs.stdenv.isLinux (
+  home.activation.copyAlacrittyToWindows = lib.mkIf isWSL (
     lib.hm.dag.entryAfter [ "linkGeneration" ] ''
       win_user="$(/mnt/c/Windows/system32/cmd.exe /c "echo %USERNAME%" 2>/dev/null | tr -d '\r')"
       if [ -z "$win_user" ]; then

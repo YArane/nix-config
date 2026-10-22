@@ -26,6 +26,11 @@ Curated IntelliJ settings, stripped of machine-specific paths, plugin state, and
 - **Window layout** — Machine-specific, not portable.
 - **Database connections** — Configure per environment.
 
+## Native NixOS (desktop)
+
+IntelliJ is installed from nixpkgs (`hosts/desktop/default.nix`). Import via
+File → Manage IDE Settings → Import Settings → `~/nix-config/config/intellij/settings.zip`.
+
 ## WSL setup
 
 IntelliJ runs on Windows and connects to the WSL filesystem:
