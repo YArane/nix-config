@@ -41,6 +41,8 @@ let
 
       # ── First run on a fresh machine: rebuild the prefix ──────────────
       if [ ! -d "$WINEPREFIX/drive_c" ]; then
+        # Wine creates the prefix folder itself, but not its missing parents.
+        mkdir -p "$WINEPREFIX"
         # Skip the Mono/Gecko install prompts while Wine creates the prefix.
         WINEDLLOVERRIDES="mscoree,mshtml=" wineboot -i
         wine reg add 'HKCU\Control Panel\Desktop' /v LogPixels /t REG_DWORD /d ${toString dpi} /f
