@@ -14,6 +14,7 @@ in
     ./amd.nix
     ./gaming.nix
     ./foobar2000.nix
+    ./jellyfin.nix
     ./keyboard.nix
   ];
 
@@ -39,6 +40,21 @@ in
   hardware.bluetooth.enable = true;
 
   time.timeZone = "America/Toronto";
+
+  # NTFS data drive (label "a"), mounted at boot rather than on-demand by
+  # Plasma under /run/media, so system services (Jellyfin) can read it.
+  # umask=022: yarden owns everything (rw); other users get read-only.
+  fileSystems."/mnt/a" = {
+    device = "/dev/disk/by-uuid/232B46687E8BDBD7";
+    fsType = "ntfs3";
+    options = [
+      "nofail" # don't block boot if the drive is missing or dirty
+      "uid=1000"
+      "gid=100"
+      "umask=022"
+      "windows_names" # refuse filenames Windows can't open
+    ];
+  };
 
   # Compressed swap in RAM; the disk swap partition is only used after this fills.
   zramSwap.enable = true;
