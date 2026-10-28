@@ -11,7 +11,7 @@ in
   imports = [
     ./hardware-configuration.nix # generated on the machine: copy from /etc/nixos/
     ../../modules/nixos/common.nix
-    ./nvidia.nix   # GTX 1050 Ti — remove when the AMD card goes in
+    ./amd.nix
     ./gaming.nix
     ./keyboard.nix
   ];
@@ -26,9 +26,16 @@ in
   };
   boot.loader.efi.canTouchEfiVariables = true;
 
+  # Track the newest kernel: RDNA 4 still gets amdgpu fixes every release,
+  # which the default LTS kernel only picks up much later.
+  boot.kernelPackages = pkgs.linuxPackages_latest;
+
   # ── System ────────────────────────────────────────────────────────
   networking.hostName = "nixos-desktop";
   networking.networkmanager.enable = true;
+
+  # Onboard Bluetooth (wireless controllers, headsets); Plasma adds the tray UI.
+  hardware.bluetooth.enable = true;
 
   time.timeZone = "America/Toronto";
 

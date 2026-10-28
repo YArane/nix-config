@@ -51,7 +51,7 @@ nix-config/
 │   ├── desktop/                ← native NixOS desktop
 │   │   ├── default.nix         ← boot, Plasma, audio, fonts, GUI apps
 │   │   ├── hardware-configuration.nix ← generated on the machine
-│   │   ├── nvidia.nix          ← GPU driver (temporary: GTX 1050 Ti)
+│   │   ├── amd.nix             ← GPU (RX 9070 XT)
 │   │   ├── gaming.nix          ← Steam, Proton-GE, gamemode, gamescope
 │   │   └── keyboard.nix        ← keyd remaps
 │   └── darwin/default.nix      ← nix-darwin system config

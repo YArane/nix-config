@@ -38,7 +38,7 @@ FiraCode Nerd Font, Steam, GPU drivers and the keyboard remap are all declared i
    ```bash
    sudo nixos-rebuild switch --flake .#desktop
    ```
-   Reboot once afterwards so the Nvidia driver and keyd load cleanly.
+   Reboot once afterwards so keyd loads cleanly.
 
 5. From now on:
    ```bash
@@ -54,12 +54,10 @@ delete it.
 
 ## Things to know
 
-### Graphics: GTX 1050 Ti now, AMD later
+### Graphics: RX 9070 XT
 
-`hosts/desktop/nvidia.nix` uses NVIDIA's legacy 580 driver (Pascal). When the AMD card
-goes in, delete that file and its import line in `default.nix` — AMD's driver is part
-of the kernel. If KDE's Wayland session is glitchy on the 1050 Ti, pick the X11 session
-on the login screen.
+`hosts/desktop/amd.nix` covers the GPU. The amdgpu driver ships with the kernel and
+Mesa comes with `hardware.graphics`, so there's no driver to pick or update separately.
 
 ### Gaming
 
