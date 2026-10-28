@@ -65,8 +65,13 @@ in
     pulse.enable = true;
   };
 
-  # Replaces the manual FiraCode Nerd Font install (used by Alacritty).
-  fonts.packages = [ pkgs.nerd-fonts.fira-code ];
+  fonts.packages = with pkgs; [
+    nerd-fonts.fira-code # Alacritty (replaces the manual Windows install)
+    # Microsoft's web fonts, so sites that ask for them get the real thing
+    # instead of Liberation/Noto look-alikes. Unfree (allowed in common.nix).
+    corefonts   # Arial, Times New Roman, Verdana, Georgia, Tahoma, Courier New, …
+    vista-fonts # Calibri, Cambria, Consolas, Candara, Constantia, Corbel
+  ];
 
   # GUI apps that are manual Windows installs on the WSL host.
   # (Alacritty comes from modules/home/terminal.nix.)
