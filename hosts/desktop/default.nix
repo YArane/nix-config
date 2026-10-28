@@ -13,6 +13,7 @@ in
     ../../modules/nixos/common.nix
     ./amd.nix
     ./gaming.nix
+    ./foobar2000.nix
     ./keyboard.nix
   ];
 
