@@ -72,6 +72,7 @@ in
   environment.systemPackages = with pkgs; [
     google-chrome
     jetbrains.idea # unified IntelliJ IDEA (the old Community edition is discontinued)
+    klassy         # Plasma window decoration + application style (experiment)
   ];
 
   users.users.${username}.extraGroups = [ "networkmanager" ];
