@@ -2,12 +2,17 @@
 # playlists carried over from Windows.
 #
 # Nix provides Wine and the launcher. The Wine prefix is mutable state; only two
-# folders in it can't be regenerated (the program and the profile), and those are
-# backed up to the music disk. The profile holds the Last.fm API secret, so it
-# must never be copied into this repo.
+# folders in it can't be regenerated (the program and the profile). A one-time
+# copy of those lives on the music disk as a seed for setting up new machines;
+# the launcher only ever reads it. The profile holds the Last.fm API secret, so
+# it must never be copied into this repo.
+#
+# To refresh the seed after changing the theme or components (foobar2000 closed):
+#   rsync -a --delete "<prefix>/drive_c/Program Files (x86)/foobar2000/" <seed>/program/
+#   rsync -a --delete "<prefix>/drive_c/users/$USER/AppData/Roaming/foobar2000/" <seed>/profile/
 #
 # On first launch on a fresh machine the launcher rebuilds the prefix:
-# Wine's system files from `wineboot`, the two folders from the backup, the DPI
+# Wine's system files from `wineboot`, the two folders from the seed, the DPI
 # setting and the icon from this file.
 { config, pkgs, username, ... }:
 
@@ -15,7 +20,7 @@ let
   # On Windows the music lived at D:\simdisk\Music. Mapping D: to the same disk
   # keeps every library path and playlist entry valid without rewriting them.
   musicDrive = "/run/media/${username}/a";
-  backup = "${musicDrive}/backups/foobar2000";
+  seed = "${musicDrive}/backups/foobar2000";
 
   prefix = "${config.users.users.${username}.home}/.local/share/wineprefixes/foobar2000";
 
@@ -24,7 +29,7 @@ let
 
   foobar2000 = pkgs.writeShellApplication {
     name = "foobar2000";
-    runtimeInputs = with pkgs; [ wineWow64Packages.stable udisks rsync icoutils ];
+    runtimeInputs = with pkgs; [ wineWow64Packages.stable udisks icoutils ];
     text = ''
       export WINEPREFIX="${prefix}"
       export WINEDEBUG=-all
@@ -41,14 +46,14 @@ let
         wine reg add 'HKCU\Control Panel\Desktop' /v LogPixels /t REG_DWORD /d ${toString dpi} /f
         wineserver -w
       fi
-      for dir in program profile; do
-        target=''${!dir}
-        if [ ! -d "$target" ]; then
-          echo "Restoring $dir from ${backup}/$dir"
-          mkdir -p "$(dirname "$target")"
-          cp -a "${backup}/$dir" "$target"
-        fi
-      done
+      restore() { # restore <seed folder> <target>
+        [ -d "$2" ] && return
+        echo "Restoring $1 from ${seed}/$1"
+        mkdir -p "$(dirname "$2")"
+        cp -a "${seed}/$1" "$2"
+      }
+      restore program "$program"
+      restore profile "$profile"
       if [ ! -f "$WINEPREFIX/foobar2000.png" ]; then
         tmp=$(mktemp -d)
         wrestool -x -t 14 "$program/foobar2000.exe" -o "$tmp"
@@ -61,16 +66,8 @@ let
       rm -f "$WINEPREFIX/dosdevices/d::"
       ln -sfn "${musicDrive}" "$WINEPREFIX/dosdevices/d:"
 
-      # Not `exec`: wine returns when foobar2000 exits, then we back up.
-      (cd "$program" && wine foobar2000.exe)
-
-      # Mirror program + profile to the music disk. Guarded so a broken or
-      # empty profile can never wipe a good backup.
-      if [ -f "$profile/configuration/Core.cfg" ]; then
-        mkdir -p "${backup}"
-        rsync -a --delete "$program/" "${backup}/program/"
-        rsync -a --delete "$profile/" "${backup}/profile/"
-      fi
+      cd "$program"
+      exec wine foobar2000.exe
     '';
   };
 in
