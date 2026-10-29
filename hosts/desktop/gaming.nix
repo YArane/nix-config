@@ -11,6 +11,10 @@
   # games. Its prefixes and downloaded Proton builds are mutable state in ~.
   environment.systemPackages = [ pkgs.faugus-launcher ];
 
+  # NT sync primitives in the kernel; Proton-GE / Wine 10+ use /dev/ntsync
+  # when present (replaces esync/fsync). Built as a module, so load it at boot.
+  boot.kernelModules = [ "ntsync" ];
+
   # Per-game: Launch Options → `gamemoderun %command%`
   programs.gamemode.enable = true;
 
@@ -27,6 +31,17 @@
       cpu_power = true;
       gpu_temp = true;
       gpu_power = true;
+      gpu_core_clock = true;
+      gpu_mem_clock = true;
+      gpu_junction_temp = true;
+      gpu_mem_temp = true;
+      present_mode = true; # mode the game requests; MESA_VK_WSI_PRESENT_MODE overrides don't show here
+
+      # Benchmark logging: Shift+F2 starts a log, which stops itself after
+      # log_duration seconds. Each run writes a per-frame CSV plus a
+      # *_summary.csv (avg FPS, 1%/0.1% lows) to output_folder.
+      output_folder = "/home/${username}/mangohud-logs";
+      log_duration = 300;
     };
   };
 
