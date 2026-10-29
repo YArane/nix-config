@@ -19,7 +19,8 @@
 let
   # On Windows the music lived at D:\simdisk\Music. Mapping D: to the same disk
   # keeps every library path and playlist entry valid without rewriting them.
-  musicDrive = "/run/media/${username}/a";
+  # Mounted at boot by `fileSystems."/mnt/a"` in default.nix.
+  musicDrive = "/mnt/a";
   seed = "${musicDrive}/backups/foobar2000";
 
   prefix = "${config.users.users.${username}.home}/.local/share/wineprefixes/foobar2000";
@@ -29,15 +30,18 @@ let
 
   foobar2000 = pkgs.writeShellApplication {
     name = "foobar2000";
-    runtimeInputs = with pkgs; [ wineWow64Packages.stable udisks icoutils ];
+    runtimeInputs = with pkgs; [ wineWow64Packages.stable icoutils ];
     text = ''
       export WINEPREFIX="${prefix}"
       export WINEDEBUG=-all
       program="$WINEPREFIX/drive_c/Program Files (x86)/foobar2000"
       profile="$WINEPREFIX/drive_c/users/$USER/AppData/Roaming/foobar2000"
 
-      # The music disk isn't mounted at boot yet; mount it by label on demand.
-      [ -d "${musicDrive}/simdisk" ] || udisksctl mount -b /dev/disk/by-label/a
+      # The mount is `nofail`, so a missing disk leaves an empty mount point.
+      if [ ! -d "${musicDrive}/simdisk" ]; then
+        echo "Music disk not mounted at ${musicDrive}" >&2
+        exit 1
+      fi
 
       # ── First run on a fresh machine: rebuild the prefix ──────────────
       if [ ! -d "$WINEPREFIX/drive_c" ]; then
