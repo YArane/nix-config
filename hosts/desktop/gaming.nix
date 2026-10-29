@@ -7,6 +7,10 @@
     extraCompatPackages = [ pkgs.proton-ge-bin ];
   };
 
+  # Proton outside Steam (via umu-launcher), for Battle.net and other non-Steam
+  # games. Its prefixes and downloaded Proton builds are mutable state in ~.
+  environment.systemPackages = [ pkgs.faugus-launcher ];
+
   # Per-game: Launch Options → `gamemoderun %command%`
   programs.gamemode.enable = true;
 
