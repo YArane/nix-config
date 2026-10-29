@@ -16,6 +16,7 @@ in
     ./foobar2000.nix
     ./jellyfin.nix
     ./keyboard.nix
+    ./tailscale.nix
   ];
 
   # Makes `username` available to the shared NixOS modules.
